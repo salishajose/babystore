@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/admin/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link href="/admin/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div class="screen-overlay"></div>
+<aside th:replace = "~{admin/fragments::sidebar}"></aside>
+
+<main class="main-wrap mt-50">
+
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Order detail</h2>
+                    <p>Details for Order ID: [(${orderDetails.id})]</p>
+                    <a th:href="@{/admin_panel/order}">Close</a>
+                </div>
+            </div>
+            <div class="card">
+                <header class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                            <span>
+                                <i class="material-icons md-calendar_today"></i> <b th:text="${orderDetails.orderDate}"></b>
+                            </span> <br>
+                            <small class="text-muted">Order ID: [(${orderDetails.id})]</small>
+                        </div>
+                    </div>
+                </header> <!-- card-header end// -->
+                <div class="card-body">
+                    <div class="row mb-50 mt-20 order-info-wrap">
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-person"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Customer</h6>
+                                    <p class="mb-1">
+                                        [(${orderDetails.users.firstName})] <br> [(${orderDetails.users.email})] <br> [(${orderDetails.users.phoneNumber})]
+                                    </p>
+                                </div>
+                            </article>
+                        </div> <!-- col// -->
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-local_shipping"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Order info</h6>
+                                    <p class="mb-1">
+                                        Shipping: MyBabyExpress <br>
+                                        Pay method: [(${orderDetails.paymentMethods.paymentMode})]
+                                    </p>
+                                    <div th:if="${orderDetails.orderStatus}!='CANCELLED'">
+                                        <p th:if="${orderDetails.paymentMethods.paymentMode}=='Razor Pay'">
+                                            Payment ID: [(${orderPayments.paymentId})]<br>
+                                            Paid On:  [(${orderPayments.updateOn})]
+                                        </p>
+                                        <p th:if="${orderDetails.paymentMethods.paymentMode}!='Razor Pay'">
+                                            Paid On:  [(${orderDetails.deliveryDate})]
+                                        </p>
+                                    </div>
+                                </p>
+                            </article>
+                        </div> <!-- col// -->
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-place"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Delivery Address</h6>
+                                    <p class="mb-1">
+                                        Address: [(${orderDetails.address.recipientName})]<br>[(${orderDetails.address.houseDetails})]
+                                        <br>[(${orderDetails.address.streetAddress})]<br> [(${orderDetails.address.landmark})], [(${orderDetails.address.city})] <br>
+                                        Pin Code [(${orderDetails.address.pinCode})] [(${orderDetails.address.state})] <br>
+                                        Phone : [(${orderDetails.address.phoneNumber})], [(${orderDetails.address.alternatePhoneNUmber})]
+                                    </p>
+                                    <p  th:if="${orderDetails.orderStatus}=='DELIVERED'">Delivered On:[(${orderDetails.deliveryDate})]</p>
+                                </div>
+                            </article>
+                        </div> <!-- col// -->
+                    </div> <!-- row // -->
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th width="40%">Product</th>
+                                        <th width="20%">Unit Price</th>
+                                        <th width="20%">Quantity</th>
+                                        <th width="20%" class="text-end">Total</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="orderProduct : ${orderProductsList}" >
+                                            <span th:unless="${orderProduct.product != null}">
+                                                            Product Not Available
+                                            </span>
+                                        <td>
+                                            <a class="itemside" href="#">
+                                                <div class="left">
+                                                    <img th:if="${orderProduct.product != null}" th:src="@{'/image-product/' + ${orderProduct.product.imageUrls[0]}}" width="40" height="40" class="img-xs" alt="Item">
+                                                    <span th:unless="${orderProduct.product != null}">
+                                                            Product Not Available
+                                                </span>
+                                                </div>
+                                                <div class="info">
+                                            <span th:if="${orderProduct.product != null}">
+                                            [(${orderProduct.product.name})] <br>
+                                            </span>
+                                                    <span th:unless="${orderProduct.product != null}">
+                                                        Product Not Available
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span th:if="${orderProduct.product != null}" th:text="${orderProduct.product.salePrice}" >
+                                                             </span>
+                                            <span th:unless="${orderProduct.product != null}">
+                                                        Product Not Available
+                                                </span>
+                                        </td>
+                                        <td>
+                                        <span th:if="${orderProduct != null}" th:text="${orderProduct.quantity}" >
+                                        </span>
+                                            <span th:unless="${orderProduct.product != null}">
+                                                Product Not Available
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                        <span th:if="${orderProduct.product != null}" th:text="${orderProduct.product.salePrice} * ${orderProduct.quantity}" >
+                                        </span>
+                                            <span th:unless="${orderProduct.product != null}">
+                                        Product Not Available
+                                        </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <article class="float-end">
+                                                <dl class="dlist">
+                                                    <dt>Total Price :</dt>
+                                                    <dd th:with="totalPrice=(${orderDetails.orderAmount})" th:text="${#numbers.formatDecimal(totalPrice,0,'COMMA', 2,'POINT')}"></dd>
+                                                </dl>
+                                                <dl class="dlist">
+                                                    <dt>Shipping cost:</dt>
+                                                    <dd>Free</dd>
+                                                </dl>
+                                                <dl class="dlist">
+                                                    <dt class="text-muted">Status:</dt>
+                                                    <dd>
+                                                        <span class="badge rounded-pill alert-success text-success">Order [(${orderDetails.orderStatus})]</span>
+                                                    </dd>
+                                                </dl>
+                                            </article>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div> <!-- table-responsive// -->
+                        </div> <!-- col// -->
+                        <div class="col-lg-1">
+
+                        </div>
+                    </div>
+                </div> <!-- card-body end// -->
+            </div> <!-- card end// -->
+        </section> <!-- content-main end// -->
+
+
+
+</main>
+
+
+
+
+<script src="/admin/js/vendors/jquery-3.6.0.min.js"></script>
+<script src="/admin/js/vendors/bootstrap.bundle.min.js"></script>
+<script src="/admin/js/vendors/select2.min.js"></script>
+<script src="/admin/js/vendors/perfect-scrollbar.js"></script>
+<script src="/admin/js/vendors/jquery.fullscreen.min.js"></script>
+<script src="/admin/js/vendors/chart.js"></script>
+<!-- Main Script -->
+<script src="/admin/js/main.js" type="text/javascript"></script>
+<script src="/admin/js/custom-chart.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:replace="~{admin/fragments::head}">
+  <title></title>
+</head>
+
+<body id="page-top">
+<!--Sidebar-->
+<aside th:replace="~{admin/fragments::sidebar}"></aside>
+<!-- End of Sidebar -->
+
+<!-- Page Wrapper -->
+<main class="main-wrap">
+  <div id="wrapper">
+    <!-- Topbar -->
+    <header th:replace="~{admin/fragments::topbar}"></header>
+    <!-- End of Topbar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <!-- Main Content -->
+      <div id="content">
+        <!-- Begin Page Content -->
+<!--        <button type="button" class="btn btn-primary" visibility = false data-bs-toggle="modal"-->
+<!--                data-bs-target="#exampleAddCategoryModal"-->
+<!--                data-whatever="@mdo">Add new category-->
+<!--        </button>-->
+        <p th:if="${size == 0}">No Orders</p>
+        <div th:if="${success}" class="text-center alert alert-success">
+          <p th:text="${success}">
+          </p>
+        </div>
+        <div th:if="${error}" class="text-center alert alert-danger">
+          <p th:text="${error}"></p>
+        </div>
+
+        <table class="table table-striped" th:if="${size > 0}">
+          <thead>
+          <tr>
+            <th scope="col">Order Id</th>
+            <th scope="col">Customer Name</th>
+            <th scope="col">Order Amount </th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Payment Method </th>
+            <th scope="col">Order Status </th>
+            <th scope="col">Delivered Date </th>
+            <th scope="col">Actions </th>
+
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="orderDetails : ${orderDetailsDTOList}">
+            <th scope="row" th:text="${orderDetails.id}"></th>
+            <td>
+              <span th:text="${orderDetails.users.firstName}"></span>
+              <span th:text="${orderDetails.users.lastName}"></span>
+            </td>
+            <td>
+              <span th:text="${orderDetails.orderAmount}"></span>
+            </td>
+            <td>
+              <span th:text="${orderDetails.orderDate}"></span>
+            </td>
+            <td>
+              <span th:text="${orderDetails.paymentMethods.paymentMode}"></span>
+            </td>
+            <td>
+              <span th:text="${orderDetails.orderStatus}"></span>
+            </td>
+            <td>
+              <span th:if="${orderDetails.orderStatus}=='DELIVERED'">
+               Delivered on: [(${orderDetails.deliveryDate})]
+              </span>
+              <span th:if="${orderDetails.orderStatus}!='DELIVERED'">
+                [(${orderDetails.orderStatus})]
+              </span>
+            </td>
+            <td>
+
+              <a th:href="@{/admin_panel/order/product/{id}(id=${orderDetails.id})}"
+                 class="btn btn-primary">View</a>
+
+              <a  th:if="${orderDetails.orderStatus}=='ORDERED'" class="btn btn-danger"
+                 th:href="@{/admin_panel/order/cancel/{id}(id=${orderDetails.id})}"
+                 onclick="if (!(confirm('Are you sure you want to cancel this order?'))) return false"><i class="fi-rs-trash mr-10"></i>Cancel Order</a>
+              <a th:if="${orderDetails.orderStatus}=='ORDERED'" class="btn btn-success"
+                 th:href="@{/admin_panel/order/deliver/{id}(id=${orderDetails.id})}"
+                 onclick="if (!(confirm('Are you sure you want to Deliver this order?'))) return false"><i class="fi-rs-trash mr-10"></i>Deliver</a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div th:if="${totalPages>1}">
+          <div class="row col-sm-10">
+            <div class="col-sm-2">
+              Total rows : [[${totalItems}]]
+            </div>
+            <div class="col-sm-1">
+                                    <span th:each="i:${#numbers.sequence(1,totalPages)}">
+                                        <a th:if="${currentPage!=i}" th:href="@{'/admin_panel/order/page/'+${i}}">[[${i}]]</a>
+                                        <span th:unless="${currentPage!=i}">[[${i}]]</span>&nbsp;&nbsp;
+                                    </span>
+            </div>
+            <div class="col-sm-1">
+              <a th:if="${currentPage<totalPages}" th:href="@{'/admin_panel/order/page/'+${currentPage+1}}">
+                Next
+              </a>
+              <span th:unless="${currentPage<totalPages}">Next</span>&nbsp;&nbsp;
+            </div>
+            <div class="col-sm-1">
+              <a th:if="${currentPage<totalPages}" th:href="@{'/admin_panel/order/page/'+${totalPages}}">
+                Last
+              </a>
+              <span th:unless="${currentPage<totalPages}">Last</span>&nbsp;&nbsp;
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- End of Content Wrapper -->
+
+    </div>
+  </div>
+
+  <!--Add Categories Modal-->
+<!--  <div class="modal fade" id="exampleAddCategoryModal" tabindex="-1" role="dialog"-->
+<!--       aria-labelledby="exampleAddCategoryModalLabel"-->
+<!--       aria-hidden="true">-->
+<!--    <div class="modal-dialog" role="document">-->
+<!--      <div class="modal-content">-->
+<!--        <div class="modal-header">-->
+<!--          <h5 class="modal-title" id="exampleAddCategoryModalLabel">New Category</h5>-->
+<!--        </div>-->
+<!--        <div class="modal-body">-->
+<!--          <form th:action="@{/admin_panel/category/add}" method="post" th:object="${category}">-->
+<!--            <div class="form-group">-->
+<!--              <label for="name" class="col-form-label">Category Name:</label>-->
+<!--              <input type="text" class="form-control" id="name" name="name">-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--              <button type="submit" class="btn btn-primary">Save</button>-->
+<!--              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+  <!--End-->
+
+  <!-- Edit Category Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+       aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit category</h5>
+        </div>
+        <div class="modal-body">
+          <table>
+            <thead>
+              <th>name</th>
+            <th>quantity</th>
+            </thead>
+            <tbosy>
+              <tr th:each="orderProduct : ${orderProductsList}">
+                <td th:text="${orderProduct.product.name}"></td>
+                <td th:text="${orderProduct.quantity}"></td>
+              </tr>
+            </tbosy>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+<!-- End -->
+<!-- Bootstrap core JavaScript-->
+<div th:replace="~{admin/fragments::script}"></div>
+
+<!--<script th:src="@{/js/categories.js}"></script>-->
+<script>
+  $(document).ready(function() {
+    $('table #editButton').on('click', function (event) {
+      console.log("button clicked");
+      event.preventDefault();
+      const href = $(this).attr('href');
+      $.get(href, function (orderProductsList, status) {
+
+      });
+      $('#editModal').modal();
+    });
+  });
+
+
+</script>
+</body>
+
+</html>

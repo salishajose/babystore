@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="number"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #3399cc;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2675a9;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <input id="orderDetails_id" th:value="${orderDetails.id}" type="number" readonly>
+    <input id="paymentAmount" th:value="${orderDetails.finalAmount}" type="number" readonly>
+    <button onclick="paymentStarted()">Pay Now</button>
+</div>
+</body>
+
+<script>
+    function paymentStarted(){
+        console.log("payment started");
+        let amount = document.getElementById("paymentAmount").value;
+        let orderDetails_id = document.getElementById("orderDetails_id").value;
+        if(amount==""||amount ==null){
+            alert("fill amount");
+            return;
+        }
+        $.ajax({
+            url:'/user_home/createOrder',
+            data:JSON.stringify({"amount":amount,"orderDetails_id":orderDetails_id}),
+            contentType:'application/json',
+            type:'POST',
+            dataType:'json',
+            headers: {
+                'X-CSRF-TOKEN': $('[name="_csrf"]').attr('content')
+            },
+            success:function(response){
+                if(response.status=="created"){
+                    let options={
+                        key:'rzp_test_ceHqYFxzbLUSlS',
+                        amount:response.amount,
+                        currency:'INR',
+                        name:'My baby store Ecommerce',
+                        description:'Purchase order',
+                        order_id:response.id,
+                        handler:function (response){
+                            console.log(response.razorpay_payment_id);
+                            console.log(response.razorpay_order_id);
+                            console.log(response.razorpay_signature);
+                            updateRazorpayOrder(response.razorpay_payment_id,response.razorpay_order_id,"Paid",orderDetails_id);
+                        },
+                        prefill:{
+                            name:"",
+                            email:"",
+                            contact:""
+                        },
+                        notes:{
+                            address:"MybayStore Payment"
+                        },
+                        theme: {
+                        color: "#3399cc"
+                    }
+                    };
+                    var rzp1 = new Razorpay(options);
+                    rzp1.open();
+                    rzp1.on('payment.failed', function (response){
+                        console.log(response.error.code);
+                        console.log(response.error.description);
+                        console.log(response.error.source);
+                        console.log(response.error.step);
+                        console.log(response.error.reason);
+                        console.log(response.error.metadata.order_id);
+                        console.log(response.error.metadata.payment_id);
+                        cancelOrderdetails(orderDetails_id);
+                        alert("Failed!! Oops Payment failed.Please try after some time");
+                    });
+                }
+
+            },error:function(error){
+                console.log(error);
+                alert("something went wrong");
+                backtoUserhome();
+            }
+        });
+
+    }
+    //function to update payment details on server
+   function updateRazorpayOrder(payment_id,order_id,status,orderDetails_id){
+        $.ajax({
+            url:'/user_home/updateRazorpayOrder',
+            data:JSON.stringify({"payment_id":payment_id,"order_id":order_id,"status":status}),
+            contentType:'application/json',
+            type:'POST',
+            dataType:'json',
+            headers: {
+                'X-CSRF-TOKEN': $('[name="_csrf"]').attr('content')
+            },success:function(response){
+                alert("Success.Payment successfull.Order placed")
+                backtoUserhome();
+            },error:function(error){
+                alert("Failed.Payment successfull.But couldn't fetch datas on server.We will contact you soon.Order placed");
+                backtoUserhome();
+            }
+        })
+    }
+    //function to cancel order
+    function cancelOrderdetails(orderDetails_id){
+        $.ajax({
+            url:'/user_home/order/cancel/'+orderDetails_id,
+            type:'GET',
+            headers: {
+                'X-CSRF-TOKEN': $('[name="_csrf"]').attr('content')
+            },success:function(response){
+                alert("Cancelled.Order Cancelled.Payment failed");
+                backtoUserhome();
+            },error:function(error){
+                alert("Failed.Couldn't cancel order.canel order");
+                backtoUserhome();
+            }
+        })
+    }
+    function backtoUserhome(){
+        location.href='/user_home/order'
+    }
+</script>
+</html>
