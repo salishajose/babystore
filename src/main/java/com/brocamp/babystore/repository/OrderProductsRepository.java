@@ -33,7 +33,7 @@ public interface OrderProductsRepository extends JpaRepository<OrderProducts,Lon
             "ORDER BY SUM(op.quantity) DESC")
     List<Object[]> getAllProductSalesByDate(String status,Date date);
 
-    @Query("SELECT op.product.id, SUM(op.quantity) AS qty, SUM(op.totalRate) " +
+    @Query("SELECT op.product.id, coalesce(SUM(op.quantity),0) AS qty, SUM(op.totalRate) " +
             "FROM OrderProducts op " +
             "WHERE op.orderDetails.orderStatus = ?1 " +
             " and EXTRACT(month FROM op.orderDetails.deliveryDate) =?2 and " +
@@ -42,7 +42,7 @@ public interface OrderProductsRepository extends JpaRepository<OrderProducts,Lon
             "ORDER BY SUM(op.quantity) DESC")
     List<Object[]> getAllProductSalesByMonthwise(String status, int month, int year);
 
-    @Query("SELECT op.product.id, SUM(op.quantity) AS qty, SUM(op.totalRate) " +
+    @Query("SELECT op.product.id, coalesce(SUM(op.quantity),0)  AS qty, SUM(op.totalRate) " +
             "FROM OrderProducts op " +
             "WHERE op.orderDetails.orderStatus = ?1  and " +
             " EXTRACT(year FROM op.orderDetails.deliveryDate) = ?2 " +
