@@ -59,7 +59,8 @@ public class ReportGenerator {
             table.addCell("Category");
             table.addCell("Total Quantity Sold");
             table.addCell("Total Revenue");
-
+            long qtySum=0;
+            double amountTotal =0.0;
             // Add table rows
             for (Object [] productStat : productStats) {
                 table.addCell(productStat[0].toString());
@@ -67,10 +68,14 @@ public class ReportGenerator {
                 table.addCell(String.valueOf(productStat[2]));
                 table.addCell(String.valueOf(productStat[3]));
                 table.addCell(String.valueOf(productStat[4]));
-
-                System.out.println(productStat[0] + "" + productStat[1]);
+                qtySum+=Long.valueOf(String.valueOf(productStat[3]));
+                amountTotal+=Double.valueOf(String.valueOf(productStat[4]));
             }
-
+            table.addCell(" ");
+            table.addCell(" ");
+            table.addCell("Total:");
+            table.addCell(String.valueOf(qtySum));
+            table.addCell(String.valueOf(amountTotal));
             document.add(table);
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,6 +108,8 @@ public class ReportGenerator {
         try (PrintWriter writer = new PrintWriter(filePath)) {
             // Write the CSV header
             writer.println("Product ID,Product Name,Category,Total Quantity Sold,Total Revenue");
+            long qtySum=0;
+            double amountTotal =0.0;
 
             // Iterate over the list of OrderHistory objects and write each record to the CSV file
             for (Object [] productStat : productStats) {
@@ -112,9 +119,15 @@ public class ReportGenerator {
                         productStat[2].toString(),
                         productStat[3].toString(),
                         productStat[4].toString());
-
+                qtySum+=Long.valueOf(String.valueOf(productStat[3]));
+                amountTotal+=Double.valueOf(String.valueOf(productStat[4]));
             }
-
+            writer.printf("%s,%s,%s,%s,%s%n",
+                    " ",
+                    " ",
+                    " Total :",
+                    String.valueOf(qtySum),
+                    String.valueOf(amountTotal));
             writer.flush();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

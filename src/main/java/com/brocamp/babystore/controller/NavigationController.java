@@ -32,13 +32,17 @@ public class NavigationController {
     private OrderDetailsService orderDetailsService;
     private OrderPaymentsService orderPaymentsService;
     private ShoppingCartService shoppingCartService;
+    private PaymentMethodsService paymentMethodsService;
     @GetMapping("/")
     public String showIndex(Model model) throws Exception {
-        List<Product> productList =productService.findCurrentProducts();
-        model.addAttribute("products",productList);
-        model.addAttribute("categories",categoryService.findAllCategories());
-
-        return "common/index";
+//        List<Product> productList =productService.findCurrentProducts();
+//        model.addAttribute("products",productList);
+//        model.addAttribute("categories",categoryService.findAllCategories());
+//
+//        return "common/index";
+        //code to check any  paymentmethods in table.if not create payment methods
+        paymentMethodsService.createPaymentMethodsIfNotExists();
+        return "common/login";
     }
     @GetMapping("/shop")
     public String showshop(Model model) throws Exception {
@@ -284,5 +288,13 @@ public class NavigationController {
         model.addAttribute("age", ageList);
         return "admin/barChart";
 
+    }
+    @GetMapping("user_home/contact")
+    public String showContactPage(){
+        return "user/page-contact";
+    }
+    @GetMapping("user_home/aboutus")
+    public String showAboutus(){
+        return "user/page-about";
     }
 }

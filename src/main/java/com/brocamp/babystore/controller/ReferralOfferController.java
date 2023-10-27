@@ -3,10 +3,7 @@ package com.brocamp.babystore.controller;
 import com.brocamp.babystore.model.ReferralOffer;
 import com.brocamp.babystore.model.Users;
 import com.brocamp.babystore.security.CustomUser;
-import com.brocamp.babystore.service.EmailService;
-import com.brocamp.babystore.service.ReferralCodeGenerator;
-import com.brocamp.babystore.service.ReferralOfferService;
-import com.brocamp.babystore.service.UsersSevice;
+import com.brocamp.babystore.service.*;
 import com.brocamp.babystore.utils.Utility;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +26,8 @@ public class ReferralOfferController {
     private UsersSevice usersSevice;
     private ReferralCodeGenerator referralCodeGenerator;
     private EmailService emailService;
+    private CategoryService categoryService;
+
     @PostMapping("/user_home/sendReferralEmail")
     public String sendReferralEmail(@RequestParam("email") String email,
                                     HttpServletRequest request,
@@ -70,7 +69,8 @@ public class ReferralOfferController {
         return "common/referralSignup";
     }
     @GetMapping("user_home/referral")
-    public String showShareReferral(){
+    public String showShareReferral(Model model) throws Exception {
+        model.addAttribute("categories",categoryService.findAllCategories());
         return "user/ShareReferral";
     }
 }

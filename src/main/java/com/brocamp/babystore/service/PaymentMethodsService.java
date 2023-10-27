@@ -8,4 +8,6 @@ public interface PaymentMethodsService {
     List<PaymentMethods> findAllPaymentMethods();
 
     PaymentMethods findById(long paymentMethodsId);
+
+    void createPaymentMethodsIfNotExists();
 }

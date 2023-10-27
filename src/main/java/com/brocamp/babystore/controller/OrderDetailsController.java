@@ -35,6 +35,7 @@ public class OrderDetailsController {
     private OrderPaymentsService orderPaymentsService;
     private ShoppingCartService shoppingCartService;
     private WalletService walletService;
+    private CategoryService categoryService;
 
     @PostMapping("/user_home/order/add")
     public String saveOrderDetails(@ModelAttribute("orderDetailsDTO") OrderDetailsDTO orderDetailsDTO,
@@ -109,7 +110,7 @@ public class OrderDetailsController {
         }
     }
     @GetMapping("/user_home/order")
-    public String showOrders(Model model,Authentication authentication,HttpSession httpSession){
+    public String showOrders(Model model,Authentication authentication,HttpSession httpSession) throws Exception {
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         if(customUser!=null){
             if(customUser.isBlocked()){
@@ -127,6 +128,7 @@ public class OrderDetailsController {
                 model.addAttribute("totalItems",orderProductsPage.getTotalElements());
 
                 model.addAttribute("orderProductsList",orderProductsList);
+                model.addAttribute("categories",categoryService.findAllCategories());
                 return "user/myOrders";
             }
         }else{

@@ -63,21 +63,23 @@
 
                             </li>
                             <li>
-                                <a href="page-about.html">About</a>
+                                <a href="#" th:href="@{/user_home/aboutus}">About</a>
                             </li>
                             <li><a th:href="@{/user_home}">Shop</a>
                             </li>
                             <li><a href="#">My Account</a>
                                 <ul class="sub-menu">
-                                    <li><a href="#" th:href="@{/user_home/order}">My Order</a></li>
-                                    <li><a href="#" th:href="@{/user_home/address/add}">Add Address</a></li>
-                                    <li><a href="#" th:href="@{/user_home/address/all}">My Address</a></li>
                                     <li><a href="#" th:href="@{/user_home/user/view}">My Profile</a></li>
-                                    <li><a href="#" th:href="@{/user_home/user/changePassword}">Change Password</a></li>
+                                    <li><a href="#" th:href="@{/user_home/order}">My Orders</a></li>
+                                    <!--                                        <li><a href="#" th:href="@{/user_home/address/add}">Add Address</a></li>-->
+                                    <li><a href="#" th:href="@{/user_home/address/all}">My Addresses</a></li>
+                                    <!--                                        <li><a href="#" th:href="@{/user_home/user/changePassword}">Change Password</a></li>-->
+                                    <li><a href="#" th:href="@{/user_home/referral}">Share Referral Link</a></li>
+                                    <li><a href="#" th:href="@{/user_home/wallet}">My Wallet</a></li>
                                 </ul>
                             </li>
                             <li>
-                                <a href="page-contact.html">Contact</a>
+                                <a href="#" th:href="@{/user_home/contact}">Contact</a>
                             </li>
                         </ul>
                     </nav>

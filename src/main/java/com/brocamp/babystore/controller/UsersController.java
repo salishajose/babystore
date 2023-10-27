@@ -6,10 +6,7 @@ import com.brocamp.babystore.model.UserOTP;
 import com.brocamp.babystore.model.Users;
 import com.brocamp.babystore.repository.UsersRepository;
 import com.brocamp.babystore.security.CustomUser;
-import com.brocamp.babystore.service.EmailService;
-import com.brocamp.babystore.service.ReferralOfferService;
-import com.brocamp.babystore.service.UserOTPService;
-import com.brocamp.babystore.service.UsersSevice;
+import com.brocamp.babystore.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -33,6 +30,7 @@ public class UsersController {
     private UserOTPService userOTPService;
     private PasswordEncoder passwordEncoder;
     private ReferralOfferService referralOfferService;
+    private CategoryService categoryService;
 
 
     @PostMapping("user-registration")
@@ -45,9 +43,14 @@ public class UsersController {
             return "redirect:/signup?error";
         }else{
             try{
+                List<Users> usersList = usersSevice.findAll();
+                if(usersList.isEmpty()){
+                    newUser.setRole("ADMIN");
+                }else{
+                    newUser.setRole("CUSTOMER");
+                }
                 String encodedPassword = passwordEncoder.encode(newUser.getPassword());
                 newUser.setPassword(encodedPassword);
-                newUser.setRole("CUSTOMER");
                 newUser.setActive(true);
                 newUser.setCreatedAt(new Date());
                 newUser.setUpdateOn(new Date());
@@ -59,9 +62,10 @@ public class UsersController {
                     userOTP.setUpdateOn(new Date());
                     userOTPService.saveOrUpdate(userOTP);
                 }
-                httpSession.setAttribute("message","OTP is send to registered email.Please enter the Message within 5 minutes");
-                return "redirect:/signup?sendEmailOtp";
+                httpSession.setAttribute("message","Registered successfully.Please login");
+                return "redirect:/";
             }catch (Exception e){
+
                 e.printStackTrace();
                 throw new Exception("Can not save customer details");
 
@@ -164,7 +168,7 @@ public class UsersController {
         return "redirect:/admin_panel/user_management";
     }
     @GetMapping("/user_home/user/view")
-    public String showUserDetails(Authentication authentication,Model model){
+    public String showUserDetails(Authentication authentication,Model model) throws Exception {
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         UsersDTO usersDTO = new UsersDTO();
         usersDTO.setId(customUser.getId());
@@ -173,6 +177,7 @@ public class UsersController {
         usersDTO.setPhoneNumber(customUser.getPhoneNumber());
         usersDTO.setEmail(customUser.getUsername());
         model.addAttribute("usersDTO",usersDTO);
+        model.addAttribute("categories",categoryService.findAllCategories());
         return "user/myProfile";
     }
     @PostMapping("/user_home/users/update")
@@ -245,7 +250,7 @@ public class UsersController {
                 }
                 httpSession.setAttribute("message","User registered successfully");
                 referralOfferService.addReferralAmount(newUser.getEmail());
-                return "redirect:/signup?sendEmailOtp";
+                return "redirect:/";
             }catch (Exception e){
                 e.printStackTrace();
                 throw new Exception("Can not save customer details");
