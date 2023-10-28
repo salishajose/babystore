@@ -11,7 +11,7 @@ import java.util.List;
 public interface WalletRepository extends JpaRepository<Wallet,Long> {
     List<Wallet> findByUsersId(long id);
 
-    @Query("select sum (w.amount) from Wallet w where w.usersId=?1")
+    @Query("select COALESCE(sum(w.amount),0) from Wallet w where w.usersId=?1")
     double findSumOfWalletAmount(long id);
 
     @Query("select COALESCE(sum(w.amount),0) from Wallet w where w.transactionType=0 and w.usersId=?1")

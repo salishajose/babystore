@@ -10,7 +10,7 @@ public interface OrderPaymentsRepository extends JpaRepository<OrderPayments,Lon
     @Query("from OrderPayments o where o.orderDetails.id=?1")
     OrderPayments findByOrderDetails(long id);
 
-    @Query("select SUM(o.amount) from OrderPayments o where o.status='Paid'")
+    @Query("select COALESCE(SUM(o.amount),0) from OrderPayments o where o.status='Paid'")
     double findPaidRevenue();
     @Query("SELECT COALESCE(SUM(o.amount),0) FROM OrderPayments o " +
             "WHERE o.status = 'Paid' " +

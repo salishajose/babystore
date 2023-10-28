@@ -16,7 +16,7 @@ public interface OrderDetailsRepository extends JpaRepository<OrderDetails,Long>
     @Query("select coalesce(SUM(o.orderAmount),0)  from OrderDetails o where o.orderStatus='DELIVERED' and o.paymentMethods.id=1")
     double findTotalDeliveredCODRevenue();
 
-    @Query("select COUNT(o) from OrderDetails o where o.orderStatus=?1")
+    @Query("select COALESCE(COUNT(o)) from OrderDetails o where o.orderStatus=?1")
     long findTotalOrdersByOrderStatus(String orderStatus);
 //
 //    @Query("select SUM(o.orderAmount) from OrderDetails o where o.orderStatus='DELIVERED'" +
