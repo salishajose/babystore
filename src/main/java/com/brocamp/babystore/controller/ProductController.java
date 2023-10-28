@@ -35,7 +35,7 @@ public class ProductController {
     @GetMapping("/admin_panel/product")
     public String showAllProduct(Model model) throws Exception {
         try{
-            int pageSize =4,pageNo=1;
+            int pageSize =10,pageNo=1;
             Page<Product> productPage = productService.findPaginated(pageNo,pageSize);
             List<Product> productList = productPage.getContent();
             //for pagination
@@ -58,7 +58,7 @@ public class ProductController {
     public String showAllPaginatedProduct(@PathVariable int pageNo,
                                           Model model) throws Exception {
         try{
-            int pageSize =4;
+            int pageSize =10;
             Page<Product> productPage = productService.findPaginated(pageNo,pageSize);
             List<Product> productList = productPage.getContent();
             //for pagination
@@ -184,7 +184,7 @@ public class ProductController {
 
     @GetMapping("/admin_panel/product/search")
     public String searchProduct(@RequestParam("name") String name, Model model){
-        int pageSize =4,pageNo=1;
+        int pageSize =10,pageNo=1;
         //Page<Product> productPage = productService.findPaginatedNameContaining(name,pageNo,pageSize);
         List<Product> productList = productService.findProductNameContainig(name);
         model.addAttribute("products",productList);
@@ -286,7 +286,7 @@ public class ProductController {
             if (customUser.isBlocked()) {
                 return "redirect:/login";
             }else{
-                int pageSize =4;
+                int pageSize =10;
                 Page<Product> productPage = productService.findPaginated(pageNo,pageSize);
                 List<Product> productList = productPage.getContent();
                 model.addAttribute("currentPage",pageNo);

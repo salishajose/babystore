@@ -41,4 +41,6 @@ public interface OrderDetailsService {
     List<Object[]> getMonthlySaleChartDetails();
 
     void savePaymentMethods(OrderDetails orderDetails);
+
+    void checkOnlineOrdersPayments(long id);
 }

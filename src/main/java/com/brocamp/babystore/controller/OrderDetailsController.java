@@ -118,7 +118,9 @@ public class OrderDetailsController {
             }else {
                 //List<OrderProducts> orderProductsList = orderProductsService.findAllByUsersId(customUser.getId());
                 //List<OrderDetailsDTO> orderDetailsDTOList = orderDetailsService.findAllOrderDetailsProductsByUsersId(customUser.getId());
-                int pageSize =3,pageNo=1;
+                //code to cancel product if payment is not done
+                orderDetailsService.checkOnlineOrdersPayments(customUser.getId());
+                int pageSize =10,pageNo=1;
                 Page<OrderProducts> orderProductsPage = orderProductsService.findAllByUsersIdPaginated(
                         customUser.getId(),pageNo,pageSize);
 
@@ -146,7 +148,7 @@ public class OrderDetailsController {
             }else {
                 List<OrderProducts> orderProductsList = orderProductsService.findAllByUsersId(customUser.getId());
                 //List<OrderDetailsDTO> orderDetailsDTOList = orderDetailsService.findAllOrderDetailsProductsByUsersId(customUser.getId());
-                int pageSize =3;
+                int pageSize =10;
                 Page<OrderProducts> orderProductsPage = orderProductsService.findAllByUsersIdPaginated(
                         customUser.getId(),pageNo,pageSize);
 
@@ -167,7 +169,7 @@ public class OrderDetailsController {
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         if(customUser!=null){
             // List<OrderProducts> orderProductsList = orderProductsService.findAllByUsersId(customUser.getId());
-            int pageSize =5,pageNo=1;
+            int pageSize =10,pageNo=1;
             OrderdetailPaginationDto orderdetailPaginationDto = orderDetailsService.findAllPaginatedOrderDetails(pageNo,pageSize);
             List<OrderDetailsDTO> orderDetailsDTOList = orderdetailPaginationDto.getOrderDetailsDTOList();
 
@@ -192,7 +194,7 @@ public class OrderDetailsController {
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         if(customUser!=null){
             // List<OrderProducts> orderProductsList = orderProductsService.findAllByUsersId(customUser.getId());
-            int pageSize =5;
+            int pageSize =10;
             OrderdetailPaginationDto orderdetailPaginationDto = orderDetailsService.findAllPaginatedOrderDetails(pageNo,pageSize);
             List<OrderDetailsDTO> orderDetailsDTOList = orderdetailPaginationDto.getOrderDetailsDTOList();
 

@@ -83,7 +83,7 @@ public class UsersController {
             return "redirect:/login";
         }
         try{
-            int pageSize =5,pageNo=1;
+            int pageSize =10,pageNo=1;
             Page<Users>  usersPage = usersSevice.findPaginated(pageNo,pageSize);
             List<Users> usersList = usersPage.getContent();
             model.addAttribute("usersList",usersList);
@@ -106,7 +106,7 @@ public class UsersController {
     public String showPaginatedUsers(@PathVariable int pageNo,
                                      Model model,
                                      Authentication authentication){
-        int pageSize =5;
+        int pageSize =10;
         Page<Users> usersPage = usersSevice.findPaginated(pageNo,pageSize);
         List<Users> usersList = usersPage.getContent();
         model.addAttribute("usersList",usersList);

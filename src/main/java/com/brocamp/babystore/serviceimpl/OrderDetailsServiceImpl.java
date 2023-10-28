@@ -2,11 +2,13 @@ package com.brocamp.babystore.serviceimpl;
 
 import com.brocamp.babystore.dto.OrderDetailsDTO;
 import com.brocamp.babystore.dto.OrderdetailPaginationDto;
+import com.brocamp.babystore.enums.TransactionType;
 import com.brocamp.babystore.exception.OrderDetailsNotFoundException;
 import com.brocamp.babystore.model.*;
 import com.brocamp.babystore.repository.*;
 import com.brocamp.babystore.service.CouponService;
 import com.brocamp.babystore.service.OrderDetailsService;
+import com.brocamp.babystore.service.WalletService;
 import com.razorpay.RazorpayException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,8 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     private ProductRepository productRepository;
     private OrderPaymentsRepository orderPaymentsRepository;
     private CouponService couponService;
+    private WalletService walletService;
+
     @Override
     public OrderDetails save(OrderDetailsDTO orderDetailsDTO, Users users) throws RazorpayException {
         //code to check whether any items are out of stock
@@ -147,6 +151,16 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
                 productRepository.save(product);
             }
             orderDetailsRepository.save(orderDetails);
+            if(orderDetails.getPaymentMethods().getPaymentMode().equalsIgnoreCase("razor pay")||
+            orderDetails.getPaymentMethods().getPaymentMode().equalsIgnoreCase("wallet")){
+                Wallet wallet = new Wallet();
+                wallet.setUsersId(orderDetails.getUsers().getId());
+                wallet.setAmount(orderDetails.getFinalAmount());
+                wallet.setTransactionType(TransactionType.CREDITED);
+                wallet.setUpdateOn(new Date());
+                walletService.save(wallet);
+            }
+
         }
 
     }
@@ -252,6 +266,24 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     @Override
     public void savePaymentMethods(OrderDetails orderDetails) {
         orderDetailsRepository.save(orderDetails);
+    }
+
+    @Override
+    public void checkOnlineOrdersPayments(long usersId) {
+        List<OrderPayments> orderPaymentsList = orderPaymentsRepository.findByOrderStatusAndPaymentStatus(usersId);
+        System.out.println(orderPaymentsList);
+        if(orderPaymentsList!=null){
+            if(!orderPaymentsList.isEmpty()){
+                for(OrderPayments orderPayments : orderPaymentsList){
+                    OrderDetails orderDetails = orderPayments.getOrderDetails();
+                    if(orderDetails.getOrderStatus().equalsIgnoreCase("ORDERED")){
+                        orderDetails.setOrderStatus("CANCELLED");
+                        orderDetailsRepository.save(orderDetails);
+                    }
+                }
+            }
+        }
+
     }
 
 

@@ -56,7 +56,7 @@ public class CategoryController {
 
     @GetMapping("/admin_panel/category")
     public String getAllCategories(Model model) throws Exception {
-        int pageSize = 4, pageNo = 1;
+        int pageSize = 10, pageNo = 1;
         Page<Category> categoryPage = categoryService.findAllCategoriesPaginated(pageNo, pageSize);
         List<Category> categoryList = categoryPage.getContent();
         System.out.println(categoryList);
@@ -76,7 +76,7 @@ public class CategoryController {
     @GetMapping("/admin_panel/category/page/{pageNo}")
     public String getAllCategoriesPaginated(@PathVariable int pageNo,
                                             Model model) throws Exception {
-        int pageSize = 4;
+        int pageSize = 10;
         Page<Category> categoryPage = categoryService.findAllCategoriesPaginated(pageNo, pageSize);
         List<Category> categoryList = categoryPage.getContent();
         model.addAttribute("tittle", "Mange Category");
