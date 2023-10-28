@@ -124,11 +124,12 @@ public class NavigationController {
         model.addAttribute("pendigOrder",pendigOrder);
         model.addAttribute("deliveredOrder",deliveredOrder);
         model.addAttribute("totalOrders",totalOrders);
-
-        double orderedPercent = (double)(pendigOrder*100/totalOrders);
-        double deliveredPercent = (double)(deliveredOrder*100/totalOrders);
-        double cancelledPercent = (double)(cancelledOrder*100/totalOrders);
-
+        double orderedPercent=0.0,deliveredPercent=0.0,cancelledPercent=0.0;
+        if(totalOrders>0){
+            orderedPercent = (double)(pendigOrder*100/totalOrders);
+            deliveredPercent = (double)(deliveredOrder*100/totalOrders);
+            cancelledPercent = (double)(cancelledOrder*100/totalOrders);
+        }
         model.addAttribute("orderedPercent",orderedPercent);
         model.addAttribute("deliveredPercent",deliveredPercent);
         model.addAttribute("cancelledPercent",cancelledPercent);
